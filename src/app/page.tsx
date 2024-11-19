@@ -57,14 +57,14 @@ export default function Home() {
       <h1 className="text-xl font-bold">食べログデータを取得</h1>
       <input
         type="text"
-        className="border p-2 w-full mt-4"
+        className="border p-2 w-full mt-4 text-black"
         placeholder="食べログのURLを入力"
         value={url}
         onChange={(e) => setUrl(e.target.value)}
       />
       <button
         onClick={handleScrape}
-        className="bg-blue-500 rounded text-white py-2 px-4 mt-4"
+        className="bg-gray-700 rounded text-white py-2 px-3 mt-4 hover:bg-gray-600"
       >
         データ取得
       </button>
@@ -81,7 +81,7 @@ export default function Home() {
 
           <button
             onClick={handleAddToNotion}
-            className="bg-green-500 rounded text-white py-2 px-4 mt-4"
+            className="bg-gray-700 rounded text-white py-2 px-3 mt-4 hover:bg-gray-600"
           >
             Notion に登録
           </button>
