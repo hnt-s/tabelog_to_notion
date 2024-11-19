@@ -1,9 +1,16 @@
 'use client'
 import { useState } from 'react';
 
+interface ScrapedData {
+  storeName: string;
+  location: string;
+  genres: string[];
+  url: string;
+}
+
 export default function Home() {
   const [url, setUrl] = useState<string>('')
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<ScrapedData |null>(null)
   const [error, setError] = useState<string>('')
 
   const handleScrape = async () => {
@@ -15,8 +22,12 @@ export default function Home() {
       
       const result = await res.json()
       setData(result)
-    }catch(error: any){
-      setError(error.message)
+    }catch(error: unknown){
+      if (error instanceof Error) {
+        setError(error.message); 
+      } else {
+        setError("予期しないエラーが発生しました"); 
+      }
     }
   }
 

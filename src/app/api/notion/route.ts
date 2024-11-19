@@ -16,34 +16,27 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    try {
-        const response = await fetch(NOTION_API_URL, {
-            method: 'POST',
-            headers: {
-                "Authorization": `Bearer ${NOTION_TOKEN}`,
-                "Content-Type": "application/json",
-                "Notion-Version": NOTION_VERSION,
+    const response = await fetch(NOTION_API_URL, {
+        method: 'POST',
+        headers: {
+            "Authorization": `Bearer ${NOTION_TOKEN}`,
+            "Content-Type": "application/json",
+            "Notion-Version": NOTION_VERSION,
+        },
+        body: JSON.stringify({
+            parent: { database_id: DATABASE_ID },
+            properties: {
+                店名: { title: [{ text: { content: storeName } }] },
+                場所: { select: { name: location } },
+                ジャンル: { multi_select: genres.map((genre: string) => ({ name: genre })) },
+                URL: { url },
             },
-            body: JSON.stringify({
-                parent: { database_id: DATABASE_ID },
-                properties: {
-                    店名: { title: [{ text: { content: storeName } }] },
-                    場所: { select: { name: location } },
-                    ジャンル: { multi_select: genres.map((genre: string) => ({ name: genre })) },
-                    URL: { url },
-                },
-            }),
-        })
+        }),
+    })
 
-        if(!response.ok) {
-            throw new Error(`${response.status}`)
-        }
-
-        return NextResponse.json({ message: 'データを登録しました' }, { status: 200 });
-    }catch(error) {
-        return NextResponse.json(
-            { error: '通信エラーが発生しました' },
-            { status: 500 }
-        )
+    if(!response.ok) {
+        throw new Error(`${response.status}`)
     }
+
+    return NextResponse.json({ message: 'データを登録しました' }, { status: 200 });
 }
