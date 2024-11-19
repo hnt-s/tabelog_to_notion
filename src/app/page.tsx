@@ -43,8 +43,12 @@ export default function Home() {
       })
       if (!res.ok) throw new Error("Notionへの追加失敗")
       alert('Notionに登録されました！')
-    }catch(error: any) {
-      alert(error.message)
+    }catch(error: unknown){
+      if (error instanceof Error) { 
+        alert(error.message)
+      } else { 
+        alert("エラーが発生しました"); 
+      }
     }
   }
 
