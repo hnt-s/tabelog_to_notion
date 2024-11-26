@@ -1,9 +1,9 @@
 import * as cheerio from "cheerio";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
     //URLを取得
     const url = new URL(req.url).searchParams.get("url")
     if (!url || typeof url !== 'string'){
@@ -20,7 +20,6 @@ export async function GET(req: Request) {
 
     //場所を取得
     const location = $("div.linktree__parent").text().split('[')[0].trim()
-    console.log(location)
 
     //ジャンルを取得
     const genreTags = $("div.rdheader-subinfo dl").eq(1).find("span");
