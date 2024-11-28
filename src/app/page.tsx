@@ -1,50 +1,49 @@
-// pages/index.tsx
 'use client'
-import { useState, useEffect } from 'react';
-import ToggleButton from '../components/ToggleButton'; // ToggleButtonをインポート
+import { useState, useEffect } from 'react'
+import ToggleButton from '../components/ToggleButton'
 
 interface ScrapedData {
-  storeName: string;
-  location: string;
-  genres: string[];
-  url: string;
+  storeName: string
+  location: string
+  genres: string[]
+  url: string
 }
 
 export default function Home() {
-  const [url, setUrl] = useState<string>('');
-  const [data, setData] = useState<ScrapedData | null>(null);
-  const [error, setError] = useState<string>('');
-  const [selectedDatabase, setSelectedDatabase] = useState<string>('DATABASE_DATE'); // 初期値をセット
+  const [url, setUrl] = useState<string>('')
+  const [data, setData] = useState<ScrapedData | null>(null)
+  const [error, setError] = useState<string>('')
+  const [selectedDatabase, setSelectedDatabase] = useState<string>('DATABASE_DATE')// 初期値をセット
 
   // ボタンの色を更新するuseEffect
   useEffect(() => {
-    console.log('Selected Database Changed:', selectedDatabase);
+    console.log('Selected Database Changed:', selectedDatabase)
   }, [selectedDatabase]); // selectedDatabaseが変更されるたびに色を更新
 
   // データベース選択
   const handleDatabaseToggle = (database: string) => {
-    setSelectedDatabase(database);
+    setSelectedDatabase(database)
   }
 
   const handleScrape = async () => {
-    setError("");
+    setError("")
     try {
-      const res = await fetch(`/api/scrape?url=${encodeURIComponent(url)}`);
-      if (!res.ok) throw new Error("スクレイピング失敗");
+      const res = await fetch(`/api/scrape?url=${encodeURIComponent(url)}`)
+      if (!res.ok) throw new Error("スクレイピング失敗")
       
-      const result = await res.json();
-      setData(result);
+      const result = await res.json()
+      setData(result)
     } catch (error: unknown) {
       if (error instanceof Error) {
-        setError(error.message);
+        setError(error.message)
       } else {
-        setError("予期しないエラーが発生しました");
+        setError("予期しないエラーが発生しました")
       }
     }
   };
 
   const handleAddToNotion = async () => {
-    if (!data) return;
+    if (!data) return
     try {
       const res = await fetch("/api/notion", {
         method: 'POST',
@@ -53,13 +52,13 @@ export default function Home() {
         },
         body: JSON.stringify({ ...data, database_id: selectedDatabase }), // selectedDatabaseを送信
       });
-      if (!res.ok) throw new Error("Notionへの追加失敗");
-      alert('Notionに登録されました！');
+      if (!res.ok) throw new Error("Notionへの追加失敗")
+      alert('Notionに登録されました！')
     } catch (error: unknown) {
       if (error instanceof Error) { 
         alert(error.message);
       } else { 
-        alert("エラーが発生しました"); 
+        alert("エラーが発生しました")
       }
     }
   };

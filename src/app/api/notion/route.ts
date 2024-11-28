@@ -1,28 +1,28 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server"
 
-const NOTION_API_URL = "https://api.notion.com/v1/pages";
-const NOTION_VERSION = "2022-06-28";
-const NOTION_TOKEN = process.env.NOTION_TOKEN;
-const DATABASE_DATE = process.env.DATABASE_DATE; 
-const DATABASE_WITH_FRIENDS = process.env.DATABASE_WITH_FRIENDS; 
+const NOTION_API_URL = "https://api.notion.com/v1/pages"
+const NOTION_VERSION = "2022-06-28"
+const NOTION_TOKEN = process.env.NOTION_TOKEN
+const DATABASE_DATE = process.env.DATABASE_DATE
+const DATABASE_WITH_FRIENDS = process.env.DATABASE_WITH_FRIENDS
 
 export async function POST(req: NextRequest) {
-  const { storeName, location, genres, url, database_id } = await req.json();
+  const { storeName, location, genres, url, database_id } = await req.json()
 
   if (!storeName || !location || !url) {
     return NextResponse.json(
       { error: "読み込めないフィールドがあります" },
       { status: 400 }
-    );
+    )
   }
 
   // 選択されたデータベースIDに応じて、対応するデータベースIDを設定
-  let selectedDatabaseId = '';
+  let selectedDatabaseId = ''
   if (database_id === 'DATABASE_DATE') {
     selectedDatabaseId = DATABASE_DATE!;
   } else if (database_id === 'DATABASE_WITH_FRIENDS') {
     selectedDatabaseId = DATABASE_WITH_FRIENDS!;
-    console.log("データベースID:", selectedDatabaseId); // ここで選択されたIDを確認
+    console.log("データベースID:", selectedDatabaseId) // ここで選択されたIDを確認
   } else {
     return NextResponse.json(
       { error: "無効なデータベースIDです" },
@@ -50,8 +50,8 @@ export async function POST(req: NextRequest) {
   });
 
   if (!response.ok) {
-    throw new Error(`${response.status}`);
+    throw new Error(`${response.status}`)
   }
 
-  return NextResponse.json({ message: "データを登録しました" }, { status: 200 });
+  return NextResponse.json({ message: "データを登録しました" }, { status: 200 })
 }

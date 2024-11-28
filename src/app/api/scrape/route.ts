@@ -1,11 +1,11 @@
-import * as cheerio from "cheerio";
-import { NextRequest, NextResponse } from "next/server";
+import * as cheerio from "cheerio"
+import { NextRequest, NextResponse } from "next/server"
 
 export async function GET(req: NextRequest) {
     //URLを取得
     const url = new URL(req.url).searchParams.get("url")
     if (!url || typeof url !== 'string'){
-        return NextResponse.json({ error: "URLを指定してください" }, { status: 400 });
+        return NextResponse.json({ error: "URLを指定してください" }, { status: 400 })
     }
 
     const response = await fetch(url)
@@ -20,8 +20,8 @@ export async function GET(req: NextRequest) {
     const location = $("div.linktree__parent").text().split('[')[0].trim()
 
     //ジャンルを取得
-    const genreTags = $("div.rdheader-subinfo dl").eq(1).find("span");
-    const genres: string[] = genreTags.map((_, el) => $(el).text().trim()).get();
+    const genreTags = $("div.rdheader-subinfo dl").eq(1).find("span")
+    const genres: string[] = genreTags.map((_, el) => $(el).text().trim()).get()
 
     //正常に取得できたときの処理
     return NextResponse.json({
@@ -29,5 +29,5 @@ export async function GET(req: NextRequest) {
         location,
         genres,
         url,
-    });
+    })
 }
