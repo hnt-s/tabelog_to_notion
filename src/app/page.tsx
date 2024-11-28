@@ -11,6 +11,7 @@ interface ScrapedData {
 
 export default function Home() {
   const [url, setUrl] = useState<string>('')
+  const [memo, setMemo] = useState<string>('')
   const [data, setData] = useState<ScrapedData | null>(null)
   const [error, setError] = useState<string>('')
   const [selectedDatabase, setSelectedDatabase] = useState<string>('DATABASE_DATE')// 初期値をセット
@@ -50,7 +51,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...data, database_id: selectedDatabase }), // selectedDatabaseを送信
+        body: JSON.stringify({ ...data, memo: memo, database_id: selectedDatabase }), // selectedDatabaseを送信
       });
       if (!res.ok) throw new Error("Notionへの追加失敗")
       alert('Notionに登録されました！')
@@ -98,6 +99,15 @@ export default function Home() {
           <p>場所: {data.location}</p>
           <p>ジャンル: {data.genres.join(", ")}</p>
           <p>URL: <a href={data.url}>{data.url}</a></p>
+          <p>メモ: 
+            <input 
+              type='text'
+              className='border rounded p-2 w-full text-black '
+              placeholder='メモを入力'
+              value={memo}
+              onChange={(e) => setMemo(e.target.value)}
+            />
+          </p>
 
           <button
             onClick={handleAddToNotion}

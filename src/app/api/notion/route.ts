@@ -7,8 +7,9 @@ const DATABASE_DATE = process.env.DATABASE_DATE
 const DATABASE_WITH_FRIENDS = process.env.DATABASE_WITH_FRIENDS
 
 export async function POST(req: NextRequest) {
-  const { storeName, location, genres, url, database_id } = await req.json()
+  const { storeName, location, genres, url, memo, database_id } = await req.json()
 
+  //ジャンルなしは許容
   if (!storeName || !location || !url) {
     return NextResponse.json(
       { error: "読み込めないフィールドがあります" },
@@ -19,15 +20,14 @@ export async function POST(req: NextRequest) {
   // 選択されたデータベースIDに応じて、対応するデータベースIDを設定
   let selectedDatabaseId = ''
   if (database_id === 'DATABASE_DATE') {
-    selectedDatabaseId = DATABASE_DATE!;
+    selectedDatabaseId = DATABASE_DATE!
   } else if (database_id === 'DATABASE_WITH_FRIENDS') {
-    selectedDatabaseId = DATABASE_WITH_FRIENDS!;
-    console.log("データベースID:", selectedDatabaseId) // ここで選択されたIDを確認
+    selectedDatabaseId = DATABASE_WITH_FRIENDS!
   } else {
     return NextResponse.json(
       { error: "無効なデータベースIDです" },
       { status: 400 }
-    );
+    )
   }
 
   // Notion APIにリクエストを送信
@@ -45,9 +45,10 @@ export async function POST(req: NextRequest) {
         場所: { select: { name: location } },
         ジャンル: { multi_select: genres.map((genre: string) => ({ name: genre })) },
         URL: { url },
+        メモ: { rich_text: [{ text: { content: memo } }] },
       },
     }),
-  });
+  })
 
   if (!response.ok) {
     throw new Error(`${response.status}`)
