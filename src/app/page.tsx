@@ -1,9 +1,7 @@
+// pages/index.tsx
 'use client'
-import { useState } from 'react';
-
-//実行時に環境変数を取得
-const DATABASE_DATE = process.env.DATABASE_DATE ?? 'default_database_date'
-const DATABASE_WITH_FRIENDS = process.env.DATABASE_WITH_FRIENDS ?? 'default_database_with_friends'
+import { useState, useEffect } from 'react';
+import ToggleButton from '../components/ToggleButton'; // ToggleButtonをインポート
 
 interface ScrapedData {
   storeName: string;
@@ -13,61 +11,58 @@ interface ScrapedData {
 }
 
 export default function Home() {
-  const [url, setUrl] = useState<string>('')
-  const [data, setData] = useState<ScrapedData |null>(null)
-  const [error, setError] = useState<string>('')
-  const [selectedDatabase, setSelectedDatabase] = useState<string>(DATABASE_DATE || "")
+  const [url, setUrl] = useState<string>('');
+  const [data, setData] = useState<ScrapedData | null>(null);
+  const [error, setError] = useState<string>('');
+  const [selectedDatabase, setSelectedDatabase] = useState<string>('DATABASE_DATE'); // 初期値をセット
 
-  //データベース選択
-  const handleDatabase = () => {
-    const newDatabase =
-      selectedDatabase === DATABASE_DATE
-        ? DATABASE_WITH_FRIENDS ?? ''
-        : DATABASE_DATE ?? '';
-    
-    setSelectedDatabase(newDatabase);
-    console.log('Selected Database:', newDatabase);  // Debugging: check if state is changing
+  // ボタンの色を更新するuseEffect
+  useEffect(() => {
+    console.log('Selected Database Changed:', selectedDatabase);
+  }, [selectedDatabase]); // selectedDatabaseが変更されるたびに色を更新
+
+  // データベース選択
+  const handleDatabaseToggle = (database: string) => {
+    setSelectedDatabase(database);
   }
-  
 
   const handleScrape = async () => {
-    setError("")
+    setError("");
     try {
       const res = await fetch(`/api/scrape?url=${encodeURIComponent(url)}`);
-      //スクレイピング失敗
-      if (!res.ok) throw new Error("スクレイピング失敗")
+      if (!res.ok) throw new Error("スクレイピング失敗");
       
-      const result = await res.json()
-      setData(result)
-    }catch(error: unknown){
+      const result = await res.json();
+      setData(result);
+    } catch (error: unknown) {
       if (error instanceof Error) {
-        setError(error.message); 
+        setError(error.message);
       } else {
-        setError("予期しないエラーが発生しました"); 
+        setError("予期しないエラーが発生しました");
       }
     }
-  }
+  };
 
   const handleAddToNotion = async () => {
-    if(!data) return;
+    if (!data) return;
     try {
       const res = await fetch("/api/notion", {
         method: 'POST',
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ ...data, database_id: selectedDatabase }),
-      })
-      if (!res.ok) throw new Error("Notionへの追加失敗")
-      alert('Notionに登録されました！')
-    }catch(error: unknown){
+        body: JSON.stringify({ ...data, database_id: selectedDatabase }), // selectedDatabaseを送信
+      });
+      if (!res.ok) throw new Error("Notionへの追加失敗");
+      alert('Notionに登録されました！');
+    } catch (error: unknown) {
       if (error instanceof Error) { 
-        alert(error.message)
+        alert(error.message);
       } else { 
         alert("エラーが発生しました"); 
       }
     }
-  }
+  };
 
   return (
     <div className="px-4 pt-8">
@@ -76,29 +71,8 @@ export default function Home() {
         <div className='pt-4 pb-10 text-center text-gray-500'>食べログのURLからスクレイピングして、Notionのデータベースに登録する</div>
       </div>
 
-      <div className="pl-4">
-        <button
-          onClick={handleDatabase}
-          className={`px-4 py-2 rounded ${
-            selectedDatabase === DATABASE_DATE
-              ? 'bg-gray-700 text-white'
-              : 'bg-gray-300 text-gray-700'
-          }`}
-        >
-          デートにおすすめ
-        </button>
-        <button
-          onClick={handleDatabase}
-          className={`px-4 py-2 rounded ${
-            selectedDatabase === DATABASE_WITH_FRIENDS
-              ? 'bg-gray-700 text-white'
-              : 'bg-gray-300 text-gray-700'
-          }`}
-        >
-          みんなで行きたい！
-        </button>
-      </div>
-
+      {/* ToggleButtonを追加 */}
+      <ToggleButton selectedDatabase={selectedDatabase} onToggle={handleDatabaseToggle} />
 
       <div>
         <input
@@ -125,7 +99,6 @@ export default function Home() {
           <p>場所: {data.location}</p>
           <p>ジャンル: {data.genres.join(", ")}</p>
           <p>URL: <a href={data.url}>{data.url}</a></p>
-          <p className='hidden'>{DATABASE_DATE}</p>
 
           <button
             onClick={handleAddToNotion}
@@ -136,5 +109,5 @@ export default function Home() {
         </div>
       )}
     </div>
-  )
+  );
 }

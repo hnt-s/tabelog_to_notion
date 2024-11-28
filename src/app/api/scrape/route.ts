@@ -1,8 +1,6 @@
 import * as cheerio from "cheerio";
 import { NextRequest, NextResponse } from "next/server";
 
-
-
 export async function GET(req: NextRequest) {
     //URLを取得
     const url = new URL(req.url).searchParams.get("url")
