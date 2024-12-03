@@ -19,7 +19,7 @@ export default function Home() {
   // ボタンの色を更新するuseEffect
   useEffect(() => {
     console.log('Selected Database Changed:', selectedDatabase)
-  }, [selectedDatabase]); // selectedDatabaseが変更されるたびに色を更新
+  }, [selectedDatabase]) // selectedDatabaseが変更されるたびに色を更新
 
   // データベース選択
   const handleDatabaseToggle = (database: string) => {

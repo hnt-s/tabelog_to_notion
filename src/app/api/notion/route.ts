@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
   const { storeName, location, genres, url, memo, database_id } = await req.json()
 
   //ジャンルなしは許容
-  if (!storeName || !location || !url) {
+  if (!storeName || !location || !url || !database_id) {
     return NextResponse.json(
       { error: "読み込めないフィールドがあります" },
       { status: 400 }
